@@ -1,15 +1,12 @@
+import datetime
 import logging
 import os
 import re
-import uuid
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
-from utils.config import Config
 
 import emoji
 from colorama import Fore
-
-session_id = str(uuid.uuid4())
 
 
 def remove_emoji(string: str) -> str:
@@ -90,7 +87,7 @@ class CustomFormatter(logging.Formatter):
         return super().format(record)
 
 
-logger = logging.getLogger("NobleNotify")
+logger = logging.getLogger("Backend")
 logger.setLevel(logging.DEBUG)
 
 console_handler = logging.StreamHandler()
@@ -105,7 +102,7 @@ def save():
     Path(logs_path).mkdir(parents=True, exist_ok=True)
     logs_file = os.path.join(
         logs_path,
-        f"{session_id}.log",
+        f"{datetime.datetime.now().strftime('%d-%m-%Y %H-%M-%S')}.log",
     )
     file_handler = TimedRotatingFileHandler(
         logs_file,
@@ -120,9 +117,6 @@ def save():
             datefmt="%d/%m/%y %H:%M:%S"))
     file_handler.setLevel(logging.DEBUG)
     logger.addHandler(file_handler)
-
-
-if Config().save is True:
-    save()
-
+save()
+    
 logger.addHandler(console_handler)
